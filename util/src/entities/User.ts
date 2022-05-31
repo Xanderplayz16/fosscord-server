@@ -163,6 +163,10 @@ export class User extends BaseClass {
 
 	@Column({ type: "simple-json", select: false })
 	settings: UserSettings;
+		
+	// workaround to prevent fossord-unaware clients from deleting settings not used by them
+	@Column({ type: "simple-json", select: false })
+	extended_settings: string;
 
 	@Column({ type: "simple-json" })
 	notes: { [key: string]: string };	//key is ID of user
@@ -264,7 +268,7 @@ export class User extends BaseClass {
 			disabled: false,
 			deleted: false,
 			email: email,
-			rights: Config.get().register.rights, // TODO: grant rights correctly, as 0 actually stands for no rights at all
+			rights: Config.get().security.defaultRights,
 			nsfw_allowed: true, // TODO: depending on age
 			public_flags: "0",
 			flags: "0", // TODO: generate
@@ -273,6 +277,7 @@ export class User extends BaseClass {
 				valid_tokens_since: new Date(),
 			},
 			settings: { ...defaultSettings, locale: language },
+			extended_settings: {},
 			fingerprints: [],
 			notes: {},
 		});
